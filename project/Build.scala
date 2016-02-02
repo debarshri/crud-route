@@ -17,7 +17,7 @@ object FarragoSiteBuild extends Build {
         Resolver.typesafeRepo("releases"),
         Resolver.sonatypeRepo("public")
       ),
-      libraryDependencies ++= coreDeps ++ sprayDeps ++ slickDeps ++ mysqlDeps ++ testDeps
+      libraryDependencies ++= coreDeps ++ sprayDeps ++ slickDeps ++ h2Deps ++ testDeps
     )
   )
 }
