@@ -31,4 +31,15 @@ object Dependencies {
   val mysqlDeps = Seq(
     "mysql" % "mysql-connector-java" % "5.1.38"
   )
+
+  val h2Deps = Seq(
+    "com.h2database" % "h2" % "1.4.191"
+  )
+
+  val testDeps = Seq(
+    "io.spray" %% "spray-testkit" % sprayVersion % "test",
+    "org.specs2" %% "specs2" % "2.5",
+    "org.scalaz.stream" %% "scalaz-stream" %  "0.8"
+
+  )
 }

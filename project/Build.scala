@@ -10,12 +10,14 @@ object FarragoSiteBuild extends Build {
     base = file("."),
     settings = Seq(
       organization := "farragoLabs.io",
+      version := "1.0.0-SNAPSHOT",
       scalaVersion := "2.11.7",
       resolvers := Seq(
         "spray repo" at "http://repo.spray.io",
-        Resolver.typesafeRepo("releases")
+        Resolver.typesafeRepo("releases"),
+        Resolver.sonatypeRepo("public")
       ),
-      libraryDependencies ++= coreDeps ++ sprayDeps ++ slickDeps ++ mysqlDeps
+      libraryDependencies ++= coreDeps ++ sprayDeps ++ slickDeps ++ mysqlDeps ++ testDeps
     )
   )
 }
