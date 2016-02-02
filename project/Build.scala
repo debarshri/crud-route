@@ -1,7 +1,7 @@
 import sbt._
 import Keys._
 
-object FarragoSiteBuild extends Build {
+object SlickSprayCrudRoute extends Build {
 
   import Dependencies._
 
@@ -17,7 +17,9 @@ object FarragoSiteBuild extends Build {
         Resolver.typesafeRepo("releases"),
         Resolver.sonatypeRepo("public")
       ),
-      libraryDependencies ++= coreDeps ++ sprayDeps ++ slickDeps ++ h2Deps ++ testDeps
+      libraryDependencies ++= coreDeps ++ sprayDeps ++ slickDeps ++ h2Deps ++ testDeps,
+
+      fork in test := true
     )
   )
 }

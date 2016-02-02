@@ -66,6 +66,7 @@ class CrudRoute[T <: Table[R], R: RootJsonFormat](
 
   def updateRoute: Route = {
     updateDirective { updateModel =>
+      println("Update!!!")
       onComplete(updateModel) {
         case Success(true) => complete(OK)
         case Success(false) => complete(NotFound)
@@ -85,7 +86,7 @@ class CrudRoute[T <: Table[R], R: RootJsonFormat](
   }
 
   def createDirective: Directive1[Future[Int]] = {
-    post hflatMap {
+    put hflatMap {
       case _ => entity(as[R])
     } hflatMap {
       case r::HNil => provide(createModel(r))
