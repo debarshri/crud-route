@@ -91,20 +91,56 @@ class CrudRouteSpec extends Specification with Specs2RouteTest with HttpService 
           status === OK
         }
       }
+
       "make the model unavailable" >> {
         Get("/1") ~> exampleRoute ~> check {
           status === NotFound
         }
       }
+
+      "remove the model from the listing" >> {
+        Get() ~> exampleRoute ~> check {
+          responseAs[List[Int]] === List()
+        }
+      }
+    }
+
+    "Non-existant models" >> {
+      "Are not available" >> {
+        Get("/1") ~> exampleRoute ~> check {
+          status === NotFound
+        }
+      }
+
+      "Are not updatable" >> {
+        Post("/", ExampleModel(Some(1), "Non-sense!")) ~> exampleRoute ~> check {
+          status === NotFound
+        }
+      }
+
+      "Are not deletable" >> {
+        Delete("/1") ~> exampleRoute ~> check {
+          status === NotFound
+        }
+      }
+    }
+
+    "Inserting a model a given id" >> {
+      val withId = ExampleModel(Some(1234), "New Model")
+      "Is allowed but the id is ignored" >> {
+        Put("/", withId) ~> exampleRoute ~> check {
+          status === OK
+          responseAs[String] === "2"
+        }
+      }
+      "Even if the id is taken" >> {
+        Put("/", withId) ~> exampleRoute ~> check {
+          status === OK
+          responseAs[String] === "3"
+        }
+      }
     }
   }
-
-  def before = {
-    Try { tearDownDb() }
-    setupDb()
-  }
-
-  def after = tearDownDb()
 
   def setupDb(): Unit = {
     Await.result(db.run(exampleTable.schema.create), timeout)
