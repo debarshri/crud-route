@@ -11,3 +11,6 @@ src_managed/
 project/boot/
 .history
 .cache
+
+### IntelliJ ###
+.idea
