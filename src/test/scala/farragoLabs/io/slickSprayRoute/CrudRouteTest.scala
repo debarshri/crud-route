@@ -3,6 +3,7 @@ package farragoLabs.io.slickSprayRoute
 import org.specs2.execute.{Result, AsResult}
 import org.specs2.mutable.Specification
 import org.specs2.specification._
+import slick.driver.H2Driver
 import spray.testkit.Specs2RouteTest
 import spray.routing.HttpService
 import spray.http.StatusCodes._
@@ -19,7 +20,7 @@ import scala.util.Try
 
 case class ExampleModel(id: Option[Int], value: String)
 
-class ExampleTable(tag: Tag) extends Table[ExampleModel](tag, "Example") {
+class ExampleTable(tag: Tag) extends H2Driver.api.Table[ExampleModel](tag, "Example") {
   def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
   def value = column[String]("value")
 
@@ -39,7 +40,8 @@ class CrudRouteSpec extends Specification with Specs2RouteTest with HttpService 
   implicit val exampleTable = TableQuery[ExampleTable]
   implicit val exampleFormat = jsonFormat2(ExampleModel)
 
-  val exampleRoute = new CrudRoute[ExampleTable, ExampleModel](_.id, _.id.get)
+//  val exampleRoute = new CrudRoute[ExampleTable, ExampleModel](_.id, _.id.get)
+  val exampleRoute = new CrudRoute[ExampleModel](H2Driver).crud[ExampleTable](_.id, _.id.get)
 
   Try { tearDownDb() }
   setupDb()
