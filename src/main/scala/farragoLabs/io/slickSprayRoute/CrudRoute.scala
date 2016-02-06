@@ -27,150 +27,102 @@ import spray.routing.{Directive1, RequestContext, Route}
   */
 
 
-class CrudRoute[R: RootJsonFormat, A <: JdbcDriver](val driver: A) {
+class CrudRoute[R: RootJsonFormat](val driver: CrudDriver[R]) extends Route{
 
-  import driver.api._
+  override def apply(ctx: RequestContext): Unit = {
+    (createRoute
+      ~ readRoute
+      ~ updateRoute
+      ~ deleteRoute
+      ~ listRoute).apply(ctx)
+  }
 
-  def crud[T <: Table[R]]
-    (rowIdProjection: T => Rep[Int], modelIdProjection: R => Int)
-    (implicit db: Database, table: TableQuery[T { type TableElementType = R}])
-    : SlickCrudRoute[T] = { new SlickCrudRoute[T](rowIdProjection, modelIdProjection)(db, table) }
-
-  class SlickCrudRoute[T <: Table[R]]
-    (val rowId: T => Rep[Int], val modelId: R => Int)
-    (implicit db: Database, table: TableQuery[T { type TableElementType = R}]) extends Route {
-
-    override def apply(ctx: RequestContext): Unit = {
-      (createRoute
-        ~ readRoute
-        ~ updateRoute
-        ~ deleteRoute
-        ~ listRoute).apply(ctx)
-    }
-
-    def createRoute: Route = {
-      createDirective { createModel =>
-        onComplete(createModel) {
-          case Success(insertId: Int) => complete("" + insertId)
-          case Failure(e) => complete(BadRequest, e)
-        }
+  def createRoute: Route = {
+    createDirective { createModel =>
+      onComplete(createModel) {
+        case Success(insertId: Int) => complete("" + insertId)
+        case Failure(e) => complete(BadRequest, e)
       }
     }
+  }
 
-    def readRoute: Route = {
-      readDirective { readModel =>
-        onComplete(readModel) {
-          case Success(Some(model)) => complete(model)
-          case Success(None) => complete(NotFound)
-          case Failure(e) => complete(InternalServerError, e)
-        }
+  def readRoute: Route = {
+    readDirective { readModel =>
+      onComplete(readModel) {
+        case Success(Some(model)) => complete(model)
+        case Success(None) => complete(NotFound)
+        case Failure(e) => complete(InternalServerError, e)
       }
     }
+  }
 
-    def listRoute: Route = {
-      listDirective { ids =>
-        onComplete(ids) {
-          case Success(ids: Seq[Int]) => complete(ids)
-          case Failure(e) => complete(InternalServerError, e)
-        }
+  def listRoute: Route = {
+    listDirective { ids =>
+      onComplete(ids) {
+        case Success(ids: Seq[Int]) => complete(ids)
+        case Failure(e) => complete(InternalServerError, e)
       }
     }
+  }
 
-    def updateRoute: Route = {
-      updateDirective { updateModel =>
-        println("Update!!!")
-        onComplete(updateModel) {
-          case Success(true) => complete(OK)
-          case Success(false) => complete(NotFound)
-          case Failure(e) => complete(InternalServerError, e)
-        }
+  def updateRoute: Route = {
+    updateDirective { updateModel =>
+      println("Update!!!")
+      onComplete(updateModel) {
+        case Success(true) => complete(OK)
+        case Success(false) => complete(NotFound)
+        case Failure(e) => complete(InternalServerError, e)
       }
     }
+  }
 
-    def deleteRoute: Route = {
-      deleteDirective { deleteModel =>
-        onComplete(deleteModel) {
-          case Success(true) => complete(OK)
-          case Success(false) => complete(NotFound)
-          case Failure(e) => complete(InternalServerError, e)
-        }
+  def deleteRoute: Route = {
+    deleteDirective { deleteModel =>
+      onComplete(deleteModel) {
+        case Success(true) => complete(OK)
+        case Success(false) => complete(NotFound)
+        case Failure(e) => complete(InternalServerError, e)
       }
     }
+  }
 
-    def createDirective: Directive1[Future[Int]] = {
-      put hflatMap {
-        case _ => entity(as[R])
-      } hflatMap {
-        case r :: HNil => provide(createModel(r))
+  def createDirective: Directive1[Future[Int]] = {
+    put hflatMap {
+      case _ => entity(as[R])
+    } hflatMap {
+      case r :: HNil => provide(driver.createModel(r))
+    }
+  }
+
+  def readDirective: Directive1[Future[Option[R]]] = {
+    get hflatMap {
+      case _ => path(IntNumber)
+    } hflatMap {
+      case requestedId :: HNil => {
+        provide(driver.readModelById(requestedId))
       }
     }
+  }
 
-    def readDirective: Directive1[Future[Option[R]]] = {
-      get hflatMap {
-        case _ => path(IntNumber)
-      } hflatMap {
-        case requestedId :: HNil => {
-          provide(readModelById(requestedId))
-        }
-      }
+  def listDirective: Directive1[Future[Seq[Int]]] = {
+    get hflatMap {
+      case _ => provide(driver.listModelIds)
     }
+  }
 
-    def listDirective: Directive1[Future[Seq[Int]]] = {
-      get hflatMap {
-        case _ => provide(listModelIds)
-      }
+  def updateDirective: Directive1[Future[Boolean]] = {
+    post hflatMap {
+      case _ => entity(as[R])
+    } hflatMap {
+      case r :: HNil => provide(driver.updateModel(r))
     }
+  }
 
-    def updateDirective: Directive1[Future[Boolean]] = {
-      post hflatMap {
-        case _ => entity(as[R])
-      } hflatMap {
-        case r :: HNil => provide(updateModel(r))
-      }
-    }
-
-    def deleteDirective: Directive1[Future[Boolean]] = {
-      delete hflatMap {
-        case _ => path(IntNumber)
-      } hflatMap {
-        case id :: HNil => provide(deleteModel(id))
-      }
-    }
-
-    def createModel(model: R): Future[Int] = {
-      val q = table.returning(table.map(rowId)) += model
-
-      db.run(q)
-    }
-
-    def readModelById(id: Int): Future[Option[R]] = {
-      val q = table
-        .filter(row => rowId(row) === id)
-
-      db.run(q.result.headOption)
-    }
-
-    def listModelIds: Future[Seq[Int]] = {
-      val q = table
-        .map(row => rowId(row))
-        .result
-
-      db.run(q)
-    }
-
-    def updateModel(model: R): Future[Boolean] = {
-      val q = table
-        .filter(row => rowId(row) === modelId(model))
-        .update(model)
-
-      db.run(q).map(_ == 1)
-    }
-
-    def deleteModel(id: Int): Future[Boolean] = {
-      val q = table
-        .filter(row => rowId(row) === id).delete
-
-      db.run(q).map(_ == 1)
+  def deleteDirective: Directive1[Future[Boolean]] = {
+    delete hflatMap {
+      case _ => path(IntNumber)
+    } hflatMap {
+      case id :: HNil => provide(driver.deleteModel(id))
     }
   }
 }
