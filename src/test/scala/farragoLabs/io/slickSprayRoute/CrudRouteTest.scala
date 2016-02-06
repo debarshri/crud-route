@@ -40,8 +40,8 @@ class CrudRouteSpec extends Specification with Specs2RouteTest with HttpService 
   implicit val exampleTable = TableQuery[ExampleTable]
   implicit val exampleFormat = jsonFormat2(ExampleModel)
 
-//  val exampleRoute = new CrudRoute[ExampleTable, ExampleModel](_.id, _.id.get)
-  val exampleRoute = (new CrudRoute[ExampleModel, H2Driver.type](H2Driver)).crud[ExampleTable](_.id, _.id.get)
+  val exampleRouter = new CrudRoute[ExampleModel, H2Driver.type](H2Driver)
+  val exampleRoute = exampleRouter.crud[ExampleTable](_.id, _.id.get)
 
   Try { tearDownDb() }
   setupDb()
