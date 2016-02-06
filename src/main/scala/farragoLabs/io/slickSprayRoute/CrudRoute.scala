@@ -1,5 +1,9 @@
 package farragoLabs.io.slickSprayRoute
 
+import slick.profile
+import slick.profile.RelationalProfile
+
+import scala.language.experimental.macros
 import akka.util.Timeout
 import shapeless.{HNil, ::}
 import slick.driver.JdbcDriver
@@ -21,7 +25,9 @@ import spray.routing.{Directive1, RequestContext, Route}
 /**
   * Created by fydio on 6/2/15.
   */
-class CrudRoute[R: RootJsonFormat](val driver: JdbcDriver) {
+
+
+class CrudRoute[R: RootJsonFormat, A <: JdbcDriver](val driver: A) {
 
   import driver.api._
 
