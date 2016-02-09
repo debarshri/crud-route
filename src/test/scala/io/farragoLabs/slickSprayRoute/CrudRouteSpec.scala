@@ -9,20 +9,11 @@ import spray.json.DefaultJsonProtocol._
 import spray.routing.Route
 import spray.testkit.ScalatestRouteTest
 
-case class ExampleModel(id: Option[Int], value: String)
-
-class ExampleTable(tag: Tag) extends Table[ExampleModel](tag, "Example") {
-  def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
-  def value = column[String]("value")
-
-  def * = (id.?, value) <> (ExampleModel.tupled, ExampleModel.unapply)
-}
-
 trait CrudRouteSpec extends FreeSpec with Matchers with ScalatestRouteTest {
 
   def actorRefFactory = system
 
-  implicit val exampleFormat = jsonFormat2(ExampleModel)
+  implicit val exampleFormat = jsonFormat2(TestModel)
 
   def testRoute: Route
 
@@ -35,14 +26,14 @@ trait CrudRouteSpec extends FreeSpec with Matchers with ScalatestRouteTest {
 
     "Creating a new model should" - {
       "return a new Id" in {
-        Put("/", ExampleModel(None, "First!")) ~> testRoute ~> check {
+        Put("/", TestModel(None, "First!")) ~> testRoute ~> check {
           responseAs[String] shouldEqual "1"
         }
       }
 
       "make the model available by id" in {
         Get("/1") ~> testRoute ~> check {
-          responseAs[ExampleModel] shouldEqual ExampleModel(Some(1), "First!")
+          responseAs[TestModel] shouldEqual TestModel(Some(1), "First!")
         }
       }
 
@@ -55,14 +46,14 @@ trait CrudRouteSpec extends FreeSpec with Matchers with ScalatestRouteTest {
 
     "Updating an existing model should" - {
       "give a 200-OK" in {
-        Post("/", ExampleModel(Some(1), "1st")) ~> testRoute ~> check {
+        Post("/", TestModel(Some(1), "1st")) ~> testRoute ~> check {
           status shouldEqual OK
         }
       }
 
       "make the new model available" in {
         Get("/1") ~> testRoute ~> check {
-          responseAs[ExampleModel] shouldEqual ExampleModel(Some(1), "1st")
+          responseAs[TestModel] shouldEqual TestModel(Some(1), "1st")
         }
       }
     }
@@ -95,7 +86,7 @@ trait CrudRouteSpec extends FreeSpec with Matchers with ScalatestRouteTest {
       }
 
       "Are not updatable" in {
-        Post("/", ExampleModel(Some(1), "Non-sense!")) ~> testRoute ~> check {
+        Post("/", TestModel(Some(1), "Non-sense!")) ~> testRoute ~> check {
           status shouldEqual NotFound
         }
       }
@@ -108,7 +99,7 @@ trait CrudRouteSpec extends FreeSpec with Matchers with ScalatestRouteTest {
     }
 
     "Inserting a model a given id" - {
-      val withId = ExampleModel(Some(1234), "New Model")
+      val withId = TestModel(Some(1234), "New Model")
 
       "Is allowed but the id is ignored" in {
         Put("/", withId) ~> testRoute ~> check {

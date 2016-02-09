@@ -22,7 +22,8 @@ object SlickSprayCrudRoute extends Build {
       ),
       libraryDependencies ++= coreDeps ++ sprayDeps ++ slickDeps ++ h2Deps ++ testDeps,
 
-      fork in test := true
+      fork in Test := true,
+      parallelExecution in Test := false
     )
   )
 
