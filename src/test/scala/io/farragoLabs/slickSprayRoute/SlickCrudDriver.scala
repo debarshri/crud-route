@@ -8,9 +8,6 @@ import scala.concurrent.duration._
 import slick.driver.H2Driver
 import H2Driver.api._
 
-/**
-  * Created by Fydio on 2/9/16.
-  */
 class SlickCrudDriver extends CrudDriverSpec with BeforeAndAfterAll {
 
   def timeout = Duration(1, SECONDS)

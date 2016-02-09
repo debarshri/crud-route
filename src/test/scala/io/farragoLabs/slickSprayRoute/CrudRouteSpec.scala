@@ -2,11 +2,12 @@ package io.farragoLabs.slickSprayRoute
 
 import org.scalatest._
 import org.scalatest.concurrent.ScalaFutures
-import slick.driver.H2Driver.api._
-import slick.lifted.Tag
+
 import spray.http.StatusCodes._
 import spray.httpx.SprayJsonSupport._
+
 import spray.json.DefaultJsonProtocol._
+
 import spray.routing.Route
 import spray.testkit.ScalatestRouteTest
 
@@ -16,7 +17,7 @@ abstract class CrudRouteSpec extends FreeSpec with Matchers with ScalatestRouteT
 
   implicit val exampleFormat = jsonFormat2(TestModel)
 
-  def testRoute: CrudRoute
+  def testRoute: Route
 
   "CrudRoute" - {
     "Get an empty jsonList for an empty table" in {

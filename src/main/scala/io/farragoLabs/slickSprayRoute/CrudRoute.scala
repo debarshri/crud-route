@@ -1,5 +1,10 @@
 package io.farragoLabs.slickSprayRoute
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent._
+import scala.language.experimental.macros
+import scala.util.{Failure, Success}
+
 import shapeless.{::, HNil}
 import spray.http.StatusCodes._
 
@@ -10,24 +15,14 @@ import spray.httpx.SprayJsonSupport._
 import spray.routing.Directives._
 import spray.routing._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent._
-import scala.language.experimental.macros
-import scala.util.{Try, Failure, Success}
-
-/**
-  * Created by fydio on 6/2/15.
-  */
-
-
 class CrudRoute[R: RootJsonFormat](val driver: CrudDriver[R]) extends Route{
 
   override def apply(ctx: RequestContext): Unit = {
     (createRoute
-      ~ readRoute
-      ~ updateRoute
-      ~ deleteRoute
-      ~ listRoute).apply(ctx)
+    ~ readRoute
+    ~ updateRoute
+    ~ deleteRoute
+    ~ listRoute).apply(ctx)
   }
 
   def createRoute: Route = {

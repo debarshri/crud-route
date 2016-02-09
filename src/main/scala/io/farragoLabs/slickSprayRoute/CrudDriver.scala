@@ -2,9 +2,6 @@ package io.farragoLabs.slickSprayRoute
 
 import scala.concurrent.Future
 
-/**
-  * Created by admin on 2/6/16.
-  */
 trait CrudDriver[R] {
   def createModel(model: R): Future[Int]
   def readModelById(id: Int): Future[Option[R]]

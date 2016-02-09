@@ -6,9 +6,6 @@ import spray.json.RootJsonFormat
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-/**
-  * Created by admin on 2/6/16.
-  */
 class SlickCrudDriverProvider[A <: JdbcDriver](val driver: A) {
 
   import driver.api._
@@ -16,7 +13,7 @@ class SlickCrudDriverProvider[A <: JdbcDriver](val driver: A) {
   def apply[R: RootJsonFormat, T <: Table[R]]
   (rowIdProjection: T => Rep[Int], modelIdProjection: R => Int)
   (implicit db: Database, table: TableQuery[T { type TableElementType = R}]): SlickCrudDriver[R, T] = {
-    new SlickCrudDriver[R, T](rowIdProjection, modelIdProjection, db, table)
+    new SlickCrudDriver[R, T](rowIdProjection, modelIdProjection, db, table): SlickCrudDriver[R, T]
   }
 
   class SlickCrudDriver[R: RootJsonFormat, T <: Table[R]]

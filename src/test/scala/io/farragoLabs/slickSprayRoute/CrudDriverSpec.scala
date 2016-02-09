@@ -1,17 +1,8 @@
 package io.farragoLabs.slickSprayRoute
 
+import org.scalatest._
 import org.scalatest.concurrent.ScalaFutures
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Await
-import scala.concurrent.duration._
-
-import org.scalatest._
-import slick.driver.JdbcProfile
-
-/**
-  * Created by Fydio on 2/9/16.
-  */
 abstract class CrudDriverSpec extends FreeSpec with Matchers with ScalaFutures {
 
   def driver: CrudDriver[TestModel]
