@@ -1,7 +1,4 @@
-package farragoLabs.io.slickSprayRoute
-
-import spray.json.RootJsonFormat
-import spray.routing._
+package io.farragoLabs.slickSprayRoute
 
 import scala.concurrent.Future
 

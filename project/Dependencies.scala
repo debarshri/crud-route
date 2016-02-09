@@ -38,8 +38,6 @@ object Dependencies {
 
   val testDeps = Seq(
     "io.spray" %% "spray-testkit" % sprayVersion % "test",
-    "org.specs2" %% "specs2" % "2.5",
-    "org.scalaz.stream" %% "scalaz-stream" %  "0.8"
-
+    "org.scalatest" %% "scalatest" % "2.2.4" % "test"
   )
 }

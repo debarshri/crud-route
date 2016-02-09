@@ -1,8 +1,7 @@
-package farragoLabs.io.slickSprayRoute
+package io.farragoLabs.slickSprayRoute
 
 import slick.driver.JdbcDriver
 import spray.json.RootJsonFormat
-import spray.routing._
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
