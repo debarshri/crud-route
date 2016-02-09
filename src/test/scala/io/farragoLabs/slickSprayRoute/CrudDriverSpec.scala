@@ -12,7 +12,7 @@ import slick.driver.JdbcProfile
 /**
   * Created by Fydio on 2/9/16.
   */
-trait CrudDriverSpec extends FreeSpec with Matchers with ScalaFutures {
+abstract class CrudDriverSpec extends FreeSpec with Matchers with ScalaFutures {
 
   def driver: CrudDriver[TestModel]
 
