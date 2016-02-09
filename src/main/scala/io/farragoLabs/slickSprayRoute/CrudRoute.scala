@@ -33,7 +33,7 @@ class CrudRoute[R: RootJsonFormat](val driver: CrudDriver[R]) extends Route{
   def createRoute: Route = {
     createDirective { createModel =>
       onComplete(createModel) {
-        case Success(insertId: Int) => complete("" + insertId)
+        case Success(insertId: Int) => complete(s"$insertId")
         case Failure(e) => complete(BadRequest, e)
       }
     }
@@ -41,39 +41,33 @@ class CrudRoute[R: RootJsonFormat](val driver: CrudDriver[R]) extends Route{
 
   def readRoute: Route = {
     readDirective { readModel =>
-      onComplete(readModel) {
-        case Success(Some(model)) => complete(model)
-        case Success(None) => complete(NotFound)
-        case Failure(e) => complete(InternalServerError, e)
+      completeWith(readModel) {
+        case Some(model) => complete(model)
+        case None => complete(NotFound)
       }
     }
   }
 
   def listRoute: Route = {
     listDirective { ids =>
-      onComplete(ids) {
-        case Success(ids: Seq[Int]) => complete(ids)
-        case Failure(e) => complete(InternalServerError, e)
+      completeWith(ids) { idSeq =>
+        complete(idSeq)
       }
     }
   }
 
   def updateRoute: Route = {
     updateDirective { updateModel =>
-      onComplete(updateModel) {
-        case Success(true) => complete(OK)
-        case Success(false) => complete(NotFound)
-        case Failure(e) => complete(InternalServerError, e)
+      completeWith(updateModel) { updated =>
+        complete(if (updated) OK else NotFound)
       }
     }
   }
 
   def deleteRoute: Route = {
     deleteDirective { deleteModel =>
-      onComplete(deleteModel) {
-        case Success(true) => complete(OK)
-        case Success(false) => complete(NotFound)
-        case Failure(e) => complete(InternalServerError, e)
+      completeWith(deleteModel) { deleted =>
+        complete(if (deleted) OK else NotFound)
       }
     }
   }
@@ -115,6 +109,13 @@ class CrudRoute[R: RootJsonFormat](val driver: CrudDriver[R]) extends Route{
       case _ => path(IntNumber)
     } hflatMap {
       case id :: HNil => provide(driver.deleteModel(id))
+    }
+  }
+
+  def completeWith[T](resultOf: Future[T]): Directive1[T] = {
+    onComplete[T](resultOf) flatMap {
+      case Success(value) => provide(value)
+      case Failure(error) => complete(InternalServerError, error)
     }
   }
 }
