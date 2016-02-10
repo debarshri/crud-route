@@ -1,4 +1,4 @@
-package io.farragoLabs.slickSprayRoute
+package io.farragoLabs.crudRoute
 
 import slick.driver.JdbcDriver
 import spray.json.RootJsonFormat

@@ -1,4 +1,4 @@
-package io.farragoLabs.slickSprayRoute
+package io.farragoLabs.crudRoute
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._

@@ -1,4 +1,4 @@
-package io.farragoLabs.slickSprayRoute
+package io.farragoLabs.crudRoute
 
 import org.scalatest.BeforeAndAfterAll
 

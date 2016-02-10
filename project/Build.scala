@@ -6,13 +6,13 @@ object SlickSprayCrudRoute extends Build {
   import Dependencies._
 
   lazy val root = Project(
-    id = "slick-spray-route",
+    id = "crud-route",
     base = file("."),
     settings = Seq(
       organization := "io.farragoLabs",
       version := "1.0.0-SNAPSHOT",
       licenses := Seq(),
-      homepage := Some(url("http://github.com/FarragoLabs/slick-spray-route")),
+      homepage := Some(url("http://github.com/FarragoLabs/crud-route")),
 
       scalaVersion := "2.11.7",
       resolvers := Seq(
@@ -51,6 +51,6 @@ object SlickSprayCrudRoute extends Build {
           <name>Debarshi Basak</name>
         </developer>
       </developers>
-      )
+    )
   )
 }

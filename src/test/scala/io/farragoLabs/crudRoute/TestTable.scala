@@ -1,4 +1,4 @@
-package io.farragoLabs.slickSprayRoute
+package io.farragoLabs.crudRoute
 
 import slick.lifted.Tag
 import slick.driver.H2Driver.api._
