@@ -1,6 +1,7 @@
-package io.farragoLabs.crudRoute
+package io.farragoLabs.crudRoute.slickDriver
 
 import org.scalatest.BeforeAndAfterAll
+import io.farragoLabs.crudRoute.{CrudDriverSpec, TestModel}
 
 import scala.concurrent.Await
 import scala.concurrent.duration._

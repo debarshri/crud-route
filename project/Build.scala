@@ -8,23 +8,34 @@ object SlickSprayCrudRoute extends Build {
   lazy val root = Project(
     id = "crud-route",
     base = file("."),
-    settings = Seq(
-      organization := "io.farragoLabs",
-      version := "1.0.0-SNAPSHOT",
-      licenses := Seq(),
-      homepage := Some(url("http://github.com/FarragoLabs/crud-route")),
+    settings = commonSettings ++ testSettings ++
+      Seq(
+        libraryDependencies ++= coreDeps ++ sprayDeps ++ testDeps))
 
-      scalaVersion := "2.11.7",
-      resolvers := Seq(
-        "spray repo" at "http://repo.spray.io",
-        Resolver.typesafeRepo("releases"),
-        Resolver.sonatypeRepo("public")
-      ),
-      libraryDependencies ++= coreDeps ++ sprayDeps ++ slickDeps ++ h2Deps ++ testDeps,
+  lazy val slickDriver = Project(
+    id = "crud-route-slick-driver",
+    base = file("./slickDriver"),
+    settings = commonSettings ++ testSettings ++
+      Seq(
+        libraryDependencies ++= coreDeps ++ sprayDeps ++ slickDeps ++ h2Deps ++ testDeps)
+  ) dependsOn(root % "compile->compile;test->test")
 
-      fork in Test := true,
-      parallelExecution in Test := false
+  lazy val commonSettings = Seq(
+    organization := "io.farragoLabs",
+    version := "1.0.0-SNAPSHOT",
+    licenses := Seq(),
+    homepage := Some(url("http://github.com/FarragoLabs/crud-route")),
+
+    scalaVersion := "2.11.7",
+    resolvers := Seq(
+      "spray repo" at "http://repo.spray.io",
+      Resolver.typesafeRepo("releases"),
+      Resolver.sonatypeRepo("public")
     )
+  )
+
+  lazy val testSettings = Seq(
+    fork in Test := true
   )
 
   lazy val publishSettings = Seq(

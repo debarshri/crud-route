@@ -1,10 +1,12 @@
-package io.farragoLabs.crudRoute
+package io.farragoLabs.crudRoute.slickDriver
 
 import slick.driver.JdbcDriver
 import spray.json.RootJsonFormat
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+
+import io.farragoLabs.crudRoute.CrudDriver
 
 class SlickCrudDriverProvider[A <: JdbcDriver](val driver: A) {
 

@@ -1,13 +1,9 @@
-package io.farragoLabs.crudRoute
+package io.farragoLabs.crudRoute.slickDriver
 
 import slick.lifted.Tag
 import slick.driver.H2Driver.api._
 
-case class TestModel(id: Option[Int], value: String)
-
-object TestModel extends ((Option[Int], String) => TestModel) {
-  def apply(value: String): TestModel = TestModel(None, value)
-}
+import io.farragoLabs.crudRoute.TestModel
 
 class TestTable(tag: Tag) extends Table[TestModel](tag, "Test") {
   def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
