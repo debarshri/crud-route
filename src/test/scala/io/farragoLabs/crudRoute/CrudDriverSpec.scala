@@ -23,7 +23,6 @@ abstract class CrudDriverSpec extends FreeSpec with Matchers with ScalaFutures {
         }
       }
 
-
       "Should add the new id to the listing" in {
         whenReady(driver listModelIds) { ids =>
           ids should contain(1)
